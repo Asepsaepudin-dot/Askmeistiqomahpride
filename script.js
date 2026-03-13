@@ -1,14 +1,15 @@
 async function kirim(){
 
 let input=document.getElementById("userInput").value;
-
 let chat=document.getElementById("chatBox");
 
 chat.innerHTML+=`<p><b>Anda:</b> ${input}</p>`;
 
 let context=knowledgeBase.join("\n");
 
-let response=await fetch("https://api.openai.com/v1/chat/completions",{
+try{
+
+let response=await fetch("https://api.openai.com/v1/responses",{
 
 method:"POST",
 
@@ -19,15 +20,21 @@ headers:{
 
 body:JSON.stringify({
 
-model:"gpt-4o-mini",
+model:"gpt-4.1-mini",
 
-messages:[
-
-{role:"system",content:"AI Islami bernama Al Istiqomah"},
-
-{role:"system",content:context},
-
-{role:"user",content:input}
+input:[
+{
+role:"system",
+content:"AI Islami bernama Al Istiqomah"
+},
+{
+role:"system",
+content:context
+},
+{
+role:"user",
+content:input
+}
 
 ]
 
@@ -37,20 +44,16 @@ messages:[
 
 let data=await response.json();
 
-let reply=data.choices[0].message.content;
+console.log(data);
+
+let reply=data.output[0].content[0].text;
 
 chat.innerHTML+=`<p><b>AI:</b> ${reply}</p>`;
 
+}catch(error){
+
+chat.innerHTML+=`<p><b>AI:</b> Terjadi error: ${error}</p>`;
+
 }
-
-function tambahKnowledge(){
-
-let text=document.getElementById("knowledgeInput").value;
-
-knowledgeBase.push(text);
-
-simpanKnowledge();
-
-alert("Pengetahuan ditambahkan");
 
 }
