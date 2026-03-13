@@ -5,11 +5,9 @@ let chat=document.getElementById("chatBox");
 
 chat.innerHTML+=`<p><b>Anda:</b> ${input}</p>`;
 
-let context=knowledgeBase.join("\n");
-
 try{
 
-let response=await fetch("https://api.openai.com/v1/responses",{
+let response=await fetch("https://api.openai.com/v1/chat/completions",{
 
 method:"POST",
 
@@ -19,25 +17,11 @@ headers:{
 },
 
 body:JSON.stringify({
-
-model:"gpt-4.1-mini",
-
-input:[
-{
-role:"system",
-content:"AI Islami bernama Al Istiqomah"
-},
-{
-role:"system",
-content:context
-},
-{
-role:"user",
-content:input
-}
-
+model:"gpt-4o-mini",
+messages:[
+{role:"system",content:"AI Islami bernama Al Istiqomah"},
+{role:"user",content:input}
 ]
-
 })
 
 });
@@ -46,13 +30,21 @@ let data=await response.json();
 
 console.log(data);
 
-let reply=data.output[0].content[0].text;
+if(data.choices){
+
+let reply=data.choices[0].message.content;
 
 chat.innerHTML+=`<p><b>AI:</b> ${reply}</p>`;
 
+}else{
+
+chat.innerHTML+=`<p><b>AI:</b> Error: ${JSON.stringify(data)}</p>`;
+
+}
+
 }catch(error){
 
-chat.innerHTML+=`<p><b>AI:</b> Terjadi error: ${error}</p>`;
+chat.innerHTML+=`<p><b>AI:</b> Tidak bisa terhubung</p>`;
 
 }
 
